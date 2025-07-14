@@ -1,0 +1,36 @@
+Upsert for dim_channels
+CREATE TABLE dbo.[dim_channels_upsert]
+WITH
+(
+    DISTRIBUTION = REPLICATE,
+    CLUSTERED INDEX ([CHANNEL_KEY])
+)
+AS
+SELECT
+    HASHBYTES('SHA2_256', CONVERT(VARCHAR(50), CHANNEL_ID)) AS CHANNEL_KEY,
+    [CHANNEL_ID],
+    [CHANNEL_DESC],
+    [CHANNEL_CLASS],
+    GETDATE() AS CREATED_DATE,
+    'ETL' AS CREATED_BY,
+    GETDATE() AS UPDATED_DATE,
+    'ETL' AS UPDATED_BY
+FROM dbo.[stg_channels] AS s
+
+UNION ALL
+
+SELECT
+    [CHANNEL_KEY],
+    [CHANNEL_ID],
+    [CHANNEL_DESC],
+    [CHANNEL_CLASS],
+    [CREATED_DATE],
+    [CREATED_BY],
+    [UPDATED_DATE],
+    [UPDATED_BY]
+FROM dbo.[dim_channels] AS p
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM [dbo].[stg_channels] s
+    WHERE s.[CHANNEL_ID] = p.[CHANNEL_ID]
+);

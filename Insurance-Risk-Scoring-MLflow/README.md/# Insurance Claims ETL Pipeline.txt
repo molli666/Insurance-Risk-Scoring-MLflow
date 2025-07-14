@@ -1,0 +1,24 @@
+# Insurance Claims ETL Pipeline
+
+🚀 This project simulates a **batch ETL pipeline** for insurance data (claims, brokers, policies).
+
+## 📌 Tech Stack
+- Azure Data Factory (ADF)
+- Azure Synapse Analytics
+- SQL Server Stored Procedures
+- Power BI
+
+## ✅ What It Shows
+- Metadata-driven pipeline design with Lookup, ForEach, and Stored Procedure activities.
+- Fact & dimension upsert logic with HASHBYTES for surrogate keys.
+- Partitioning & indexing for faster performance.
+- Example dataset: 3 rows of claims data.
+- Final output used for risk scoring & claims trend dashboards.
+
+## 📂 Folders
+- **sql/** — Stored procedures for dim & fact tables.
+- **sample-data/** — Small CSV for testing.
+- **docs/** — Architecture diagram.
+
+## Author
+**Shyam Molli**

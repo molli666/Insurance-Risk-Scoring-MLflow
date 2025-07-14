@@ -1,0 +1,19 @@
+Upsert for fact_sales
+MERGE INTO [dbo].[fact_sales_transaction] AS tgt
+USING (
+    SELECT
+        CONVERT(BINARY(64), Hashbytes('SHA2_256',
+            CONVERT(VARCHAR(500), CONCAT(time_id, cust_id, prod_id, amount_sold)))) AS SALES_FACT_KEY,
+        time_id, cust_id, prod_id, amount_sold,
+        GETDATE() AS CREATED_DATE, 'ETL' AS CREATED_BY,
+        GETDATE() AS UPDATED_DATE, 'ETL' AS UPDATED_BY
+    FROM [dbo].[stg_sales_transaction]
+) AS src
+ON tgt.sales_fact_key = src.sales_fact_key
+WHEN MATCHED THEN
+    UPDATE SET
+        tgt.amount_sold = src.amount_sold,
+        tgt.updated_date = GETDATE()
+WHEN NOT MATCHED THEN
+    INSERT (sales_fact_key, time_id, cust_id, prod_id, amount_sold, created_date, created_by, updated_date, updated_by)
+    VALUES (src.sales_fact_key, src.time_id, src.cust_id, src.prod_id, src.amount_sold, src.created_date, src.created_by, src.updated_date, src.updated_by);
